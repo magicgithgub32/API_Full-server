@@ -1,10 +1,23 @@
 const express = require("express");
 const { connectDB } = require("./src/utils/connect");
 require("dotenv").config();
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 const server = express();
 
 connectDB();
+
+server.use(cors());
+
+const limiter = rateLimit({
+  windowMs: 3 * 60 * 1000,
+  max: 50,
+  standardHeaders: false,
+  legacyHeaders: false,
+});
+
+server.use(limiter);
 
 server.use(express.json({ limit: "5mb" }));
 server.use(express.urlencoded({ limit: "5mb", extended: false }));

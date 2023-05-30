@@ -6,13 +6,15 @@ const {
   updateAuthor,
   deleteAuthor,
 } = require("../controllers/author.controller");
+const isAuth = require("../middlewares/auth.middleware");
 
 const AuthorRouter = express.Router();
 
 AuthorRouter.get("/", getAllAuthors);
-AuthorRouter.post("/", createAuthor);
 AuthorRouter.get("/:id", getAuthorById);
-AuthorRouter.put("/:id", updateAuthor);
-AuthorRouter.delete("/:id", deleteAuthor);
+
+AuthorRouter.post("/", [isAuth], createAuthor);
+AuthorRouter.put("/:id", [isAuth], updateAuthor);
+AuthorRouter.delete("/:id", [isAuth], deleteAuthor);
 
 module.exports = AuthorRouter;

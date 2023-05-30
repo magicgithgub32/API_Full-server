@@ -11,10 +11,19 @@ const getAllUsers = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const newUser = new User(req.body);
+    const { email, password } = req.body;
+
+    const newUser = new User({ email, password });
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
       return next("User already exists 🤔");
+    }
+
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      return next(
+        "Password must be at least 6 characters long and contain both uppercase and lowercase letters 🙈"
+      );
     }
 
     const createdUser = await newUser.save();
@@ -49,4 +58,8 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllUsers, register, login };
+const checkSession = async (req, res, next) => {
+  return res.status(200).json(req.user);
+};
+
+module.exports = { getAllUsers, register, login, checkSession };

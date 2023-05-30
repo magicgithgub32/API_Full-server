@@ -6,13 +6,15 @@ const {
   updateBook,
   deleteBook,
 } = require("../controllers/book.controller");
+const isAuth = require("../middlewares/auth.middleware");
 
 const BookRouter = express.Router();
 
 BookRouter.get("/", getAllBooks);
-BookRouter.post("/", createBook);
 BookRouter.get("/:id", getBookById);
-BookRouter.patch("/:id", updateBook);
-BookRouter.delete("/:id", deleteBook);
+
+BookRouter.post("/", [isAuth], createBook);
+BookRouter.patch("/:id", [isAuth], updateBook);
+BookRouter.delete("/:id", [isAuth], deleteBook);
 
 module.exports = BookRouter;
