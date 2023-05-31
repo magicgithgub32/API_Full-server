@@ -28,6 +28,9 @@ server.use("/api/v1/books", BookRouter);
 const AuthorRouter = require("./src/api/routes/author.routes");
 server.use("/api/v1/authors", AuthorRouter);
 
+const UserRouter = require("./src/api/routes/user.routes");
+server.use("/api/v1/users", UserRouter);
+
 server.use("*", (req, res, next) => {
   return res.status(404).json("Route not found 👾");
 });

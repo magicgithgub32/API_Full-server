@@ -16,22 +16,31 @@ const register = async (req, res, next) => {
     const newUser = new User({ email, password });
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
-      return next("User already exists 🤔");
+      return res.status(400).json({ message: "User already exists 🤔" });
     }
 
     const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z]).{6,}$/;
     if (!passwordRegex.test(password)) {
-      return next(
-        "Password must be at least 6 characters long and contain both uppercase and lowercase letters 🙈"
-      );
+      return res.status(400).json({
+        message:
+          "Password must be at least 6 characters long and contain both uppercase and lowercase letters 🙈",
+      });
     }
 
     const createdUser = await newUser.save();
 
     createdUser.password = null;
-    return res.status(201).json(createdUser);
+    return res.status(201).json({
+      user: {
+        email: createdUser.email,
+        _id: createdUser._id,
+      },
+      token: token,
+    });
   } catch (error) {
-    return next("Error registering user 🥺", error);
+    console.error("Error registering user:", error);
+
+    return res.status(500).json({ message: "Error registering user 🥺" });
   }
 };
 
