@@ -1,4 +1,6 @@
+const { generateToken } = require("../../utils/jwt");
 const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -30,6 +32,9 @@ const register = async (req, res, next) => {
     const createdUser = await newUser.save();
 
     createdUser.password = null;
+
+    const token = generateToken(createdUser._id, createdUser.email);
+
     return res.status(201).json({
       user: {
         email: createdUser.email,
