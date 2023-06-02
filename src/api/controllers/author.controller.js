@@ -32,7 +32,9 @@ const updateAuthor = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const updatedAuthor = await Author.findById(id, req.body, { new: true });
+    const updatedAuthor = await Author.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
 
     return res.status(200).json(updatedAuthor);
   } catch (error) {
