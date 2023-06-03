@@ -3,10 +3,19 @@ const { connectDB } = require("./src/utils/connect");
 require("dotenv").config();
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const {
+  configCloudinaryForBookCovers,
+} = require("./src/api/middlewares/covers.middleware");
+const {
+  configCloudinaryForAvatars,
+} = require("./src/api/middlewares/avatar.middleware");
 
 const server = express();
 
 connectDB();
+
+configCloudinaryForBookCovers();
+configCloudinaryForAvatars();
 
 server.use(cors());
 
@@ -29,6 +38,7 @@ const AuthorRouter = require("./src/api/routes/author.routes");
 server.use("/api/v1/authors", AuthorRouter);
 
 const UserRouter = require("./src/api/routes/user.routes");
+const { configCloudinary } = require("./src/api/middlewares/covers.middleware");
 server.use("/api/v1/users", UserRouter);
 
 server.use("*", (req, res, next) => {

@@ -7,6 +7,7 @@ const bookSchema = new mongoose.Schema(
     genre: { type: String, required: false, trim: true },
     pages: { type: Number, required: false, trim: false },
     read: { type: Boolean, required: true, default: false },
+    cover: { type: String, required: false, trim: true },
   },
   {
     timestamps: true,

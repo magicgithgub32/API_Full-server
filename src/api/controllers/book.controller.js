@@ -1,3 +1,6 @@
+const {
+  eraseBookCoverCloudinary,
+} = require("../middlewares/covers.middleware");
 const Book = require("../models/book.model");
 
 const getAllBooks = async (req, res, next) => {
@@ -12,6 +15,11 @@ const getAllBooks = async (req, res, next) => {
 const createBook = async (req, res, next) => {
   try {
     const newBook = new Book(req.body);
+
+    if (req.file) {
+      newBook.cover = req.file.path;
+    }
+
     const createdBook = await newBook.save();
     return res.status(201).json(createdBook);
   } catch (error) {
@@ -31,12 +39,24 @@ const getBookById = async (req, res, next) => {
 const updateBook = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updatedBook = await Book.findByIdAndUpdate(id, req.body, {
+
+    const newBook = new Book(req.body);
+
+    newBook._id = id;
+
+    const originalBook = await Book.findById(id);
+
+    if (req.file) {
+      eraseBookCoverCloudinary(originalBook.cover);
+      newBook.cover = req.file.path;
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(id, newBook, {
       new: true,
     });
     return res.status(200).json(updatedBook);
   } catch (error) {
-    return next("Book not found 👺", error);
+    return next("Error updating book 👺", error);
   }
 };
 
@@ -44,6 +64,9 @@ const deleteBook = async (req, res, next) => {
   try {
     const { id } = req.params;
     const deletedBook = await Book.findByIdAndDelete(id);
+
+    eraseBookCoverCloudinary(deletedBook.cover);
+
     return res.status(200).json("Book deleted successfully");
   } catch (error) {
     return next("Book not found 👺", error);

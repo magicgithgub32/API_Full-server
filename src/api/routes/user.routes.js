@@ -7,12 +7,13 @@ const {
   login,
   checkSession,
 } = require("../controllers/user.controller");
+const { uploadAvatar } = require("../middlewares/avatar.middleware");
 
 const UserRouter = express.Router();
 
 UserRouter.get("/", [isAuth], getAllUsers);
 UserRouter.post("/checksession", [isAuth], checkSession);
-UserRouter.post("/register", register);
+UserRouter.post("/register", uploadAvatar.single("avatar"), register);
 UserRouter.post("/login", login);
 
 module.exports = UserRouter;

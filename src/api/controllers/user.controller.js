@@ -13,9 +13,14 @@ const getAllUsers = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, avatar } = req.body;
 
-    const newUser = new User({ email, password });
+    const newUser = new User({ email, password, avatar });
+
+    if (avatar) {
+      newUser.avatar = avatar;
+    }
+
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists 🤔" });
