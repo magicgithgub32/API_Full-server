@@ -1,4 +1,5 @@
 const { generateToken } = require("../../utils/jwt");
+const { eraseAvatarCloudinary } = require("../middlewares/avatar.middleware");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 
@@ -77,8 +78,38 @@ const login = async (req, res, next) => {
   }
 };
 
+const updateUserAddingAvatar = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const newUser = new User(req.body);
+
+    newUser._id = id;
+
+    const originalUser = await User.findById(id);
+
+    if (req.file) {
+      eraseAvatarCloudinary(originalUser.avatar);
+      newUser.avatar = req.file.path;
+    }
+
+    const updatedUserWithAvatar = await User.findByIdAndUpdate(id, newUser, {
+      new: true,
+    });
+    return res.status(200).json(updatedUserWithAvatar);
+  } catch (error) {
+    return next("Error adding avatar to user 👺", error);
+  }
+};
+
 const checkSession = async (req, res, next) => {
   return res.status(200).json(req.user);
 };
 
-module.exports = { getAllUsers, register, login, checkSession };
+module.exports = {
+  getAllUsers,
+  register,
+  login,
+  checkSession,
+  updateUserAddingAvatar,
+};
